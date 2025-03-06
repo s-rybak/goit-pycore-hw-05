@@ -32,6 +32,24 @@ def main():
             print(f"Error: {e}")
 
 
+def input_error(ValueErrorMessage="Give me name and phone please.", IndexErrorMessage="Give me name and phone please.", KeyErrorMessage="Please enter a valid key"):
+    """Decorator to handle input errors with different messages for different errors"""
+    def input_error_closure(func):
+        """Closure to handle input errors"""
+        def inner(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except ValueError:
+                return ValueErrorMessage
+            except KeyError:
+                return KeyErrorMessage
+            except IndexError:
+                return IndexErrorMessage
+
+        return inner
+    return input_error_closure
+
+
 def parse_input(input):
     """Parse user input into command and arguments"""
     cmd, *args = input.split()
@@ -39,6 +57,7 @@ def parse_input(input):
     return cmd, *args
 
 
+@input_error(ValueErrorMessage="Give me name and phone please.")
 def add_contact(*args):
     """Add a new contact to the contacts dictionary"""
     name, phone = args
@@ -48,7 +67,7 @@ def add_contact(*args):
         contacts[name] = phone
         return "Contact added."
 
-
+@input_error(ValueErrorMessage="Give me name and phone please.")
 def change_contact(*args):
     """Update an existing contact's phone number"""
     name, phone = args
@@ -58,7 +77,7 @@ def change_contact(*args):
         contacts[name] = phone
         return "Contact updated."
 
-
+@input_error(ValueErrorMessage="Give me name please.", IndexErrorMessage="Give me name please.")
 def show_phone(*args):
     """Show the phone number for a specific contact"""
     name = args[0]
